@@ -6,6 +6,8 @@ import Data from '../services/Data';
 
 function App() {
   const [tasks, setTasks] = useState<TaskInterface[]>([]);
+  const [newTaskDescription, setNewTaskDescription] = useState<string>("");
+
   useEffect(() => {
     (async () => {
       const loadedTasks: TaskInterface[] = await Data.loadTasks();
@@ -14,6 +16,7 @@ function App() {
     })();
   }, [])
 
+  // Mettre à jour une tâche
   const handleClickValidate = (event: React.MouseEvent<HTMLButtonElement>, task_id: number): void => {
     console.log(`Dans handleClickValidate`, task_id);
 
@@ -28,6 +31,31 @@ function App() {
   setTasks(updatedTasks);
 }
 
+// Supprimer une tâches
+const handleClickDelete = (event: React.MouseEvent<HTMLButtonElement>, task_id: number): void => {
+  console.log(`Dans handleClickDelete`, task_id);
+
+  Data.deleteTask(task_id); // Supprimer sur le serveur
+  const updatedTasks = tasks.filter(task => task.id !== task_id);
+  setTasks(updatedTasks);
+};
+
+// Ajouter une tâche
+const handleAddTask = (event: React.FormEvent): void=> {
+  event.preventDefault();
+  // Vérifie si la description de la nouvelle tâche est vide ou contient uniquement des espaces
+  if (newTaskDescription.trim() === "") return;
+
+  Data.addTask(newTaskDescription)
+    .then(newTask => {
+      setTasks([...tasks, newTask]);
+      setNewTaskDescription("");
+    })
+    .catch(error => {
+      console.error("Erreur lors de l'ajout de la tâche", error);
+    });
+};
+
   // Tri des tâches pour afficher les tâches non terminées en premier
   // sort compare chaque chaque élément du tableau les uns avec les autres
   const sortedTasks = [...tasks].sort((a, b) => {
@@ -40,7 +68,27 @@ function App() {
   return (
     <div className="App container">
       <h1 className='text-center'>Liste des tâches</h1>
-      {sortedTasks.map((task) => <Task key={task.id} {...task} onClickValidate={ handleClickValidate } />)}
+
+      {/* Formulaire d'ajout de tâche */}
+      <form onSubmit={handleAddTask} className='text-center'>
+        <input
+          type="text"
+          value={newTaskDescription}
+          onChange={(event) => setNewTaskDescription(event.target.value)}
+          placeholder="Nouvelle tâche"
+        />
+        <button type="submit" className="btn btn-info ms-3">Ajouter</button>
+      </form>
+
+      {sortedTasks.map((task) => 
+        <Task 
+          key={task.id} 
+          {...task} 
+          onClickValidate={ handleClickValidate } 
+          onClickDelete={handleClickDelete}
+          />)}
+      {/* avant le sort */}
+      {/* {tasks.map((task) => <Task key={task.id} {...task} onClickValidate={ handleClickValidate } />)} */}
     </div>
   );
 }
