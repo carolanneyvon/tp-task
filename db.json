@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": 0,
+      "description": "Faire la vaisselle",
+      "done": false,
+      "order": 1
+    },
+    {
+      "id": 1,
+      "description": "Faire du sport",
+      "done": false,
+      "order": 2
+    }
+  ]
+}
