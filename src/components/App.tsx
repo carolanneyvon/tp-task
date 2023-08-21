@@ -56,6 +56,32 @@ const handleAddTask = (event: React.FormEvent): void=> {
     });
 };
 
+//
+const handleOrderIncrease = (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
+  console.log(`Dans handleOrderIncrease`, index);
+
+  const updatedTasks = [...tasks];
+  const currentTask = updatedTasks[index];
+
+  if (currentTask.order !== undefined) {
+    currentTask.order++;
+    setTasks(updatedTasks);
+  }
+}
+
+//
+const handleOrderDecrease = (event: React.MouseEvent<HTMLButtonElement>, task_id: number): void => {
+  console.log(`Dans handleOrderDecrease`, task_id);
+
+  const updatedTasks = tasks.map(task => {
+    if (task.id === task_id && task.order !== undefined && task.order > 1) {
+      task.order--;
+    }
+    return task;
+  });
+  setTasks(updatedTasks);
+}
+
   // Tri des tâches pour afficher les tâches non terminées en premier
   // sort compare chaque chaque élément du tableau les uns avec les autres
   const sortedTasks = [...tasks].sort((a, b) => {
@@ -80,12 +106,14 @@ const handleAddTask = (event: React.FormEvent): void=> {
         <button type="submit" className="btn btn-info ms-3">Ajouter</button>
       </form>
 
-      {sortedTasks.map((task) => 
+      {sortedTasks.map((task, index) => 
         <Task 
           key={task.id} 
           {...task} 
-          onClickValidate={ handleClickValidate } 
+          onClickValidate={ handleClickValidate} 
           onClickDelete={handleClickDelete}
+          onOrderIncrease={handleOrderIncrease}
+          onOrderDecrease={handleOrderDecrease}
           />)}
       {/* avant le sort */}
       {/* {tasks.map((task) => <Task key={task.id} {...task} onClickValidate={ handleClickValidate } />)} */}
