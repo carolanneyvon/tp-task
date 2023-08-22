@@ -104,5 +104,28 @@ export default class Data {
         console.error(`Erreur attrapée dans le addTask : `, error);
       })
   }
+
+  // Change l'ordre des tâches WIP
+static async updateTaskOrder(task_id: number, new_order: number): Promise<any> {
+  return fetch(this.url + "/" + task_id, 
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "PATCH",
+    body: JSON.stringify({ order: new_order }),
+  })
+  .then(response => {
+    console.log(`Response status: `, response.status);
+    return response.json();
+  })
+  .then((tasks) => {
+    return tasks;
+  })
+  .catch(error => {
+    console.error(`Erreur attrapée dans l'updateTaskOrder : `, error);
+  });
+}
   
 }

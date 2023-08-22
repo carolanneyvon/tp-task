@@ -56,33 +56,41 @@ const handleAddTask = (event: React.FormEvent): void=> {
     });
 };
 
-//
-const handleOrderIncrease = (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
-  console.log(`Dans handleOrderIncrease`, index);
+// WIP pas terminé
+const handleOrderIncrease = (event: React.MouseEvent<HTMLButtonElement>, task_id: number): void => {
+  console.log(`Dans handleOrderIncrease`, task_id);
 
   const updatedTasks = [...tasks];
-  const currentTask = updatedTasks[index];
+  const currentIndex = updatedTasks.findIndex(task => task.id === task_id);
 
-  if (currentTask.order !== undefined) {
-    currentTask.order++;
+  if (currentIndex > 0) {
+    updatedTasks[currentIndex].order--; // Décrémente l'ordre de la tâche actuelle
+    updatedTasks[currentIndex - 1].order++; // Incrémente l'ordre de la tâche précédente
+    
+    Data.updateTaskOrder(task_id, updatedTasks[currentIndex - 1].order);
+
     setTasks(updatedTasks);
   }
 }
 
-//
+// WIP pas terminé
 const handleOrderDecrease = (event: React.MouseEvent<HTMLButtonElement>, task_id: number): void => {
   console.log(`Dans handleOrderDecrease`, task_id);
 
-  const updatedTasks = tasks.map(task => {
-    if (task.id === task_id && task.order !== undefined && task.order > 1) {
-      task.order--;
-    }
-    return task;
-  });
+  const updatedTasks = [...tasks];
+  const currentIndex = updatedTasks.findIndex(task => task.id === task_id);
+
+  if (currentIndex < updatedTasks.length - 1) {
+    updatedTasks[currentIndex].order++; // Incrémente l'ordre de la tâche actuelle
+    updatedTasks[currentIndex + 1].order--; // Décrémente l'ordre de la tâche suivante
+
+    Data.updateTaskOrder(task_id, updatedTasks[currentIndex + 1].order);
+
   setTasks(updatedTasks);
+  }
 }
 
-  // Tri des tâches pour afficher les tâches non terminées en premier
+  // Tri des tâches pour afficher les tâches par oredre puis les non terminées en premier
   // sort compare chaque chaque élément du tableau les uns avec les autres
   const sortedTasks = [...tasks].sort((a, b) => {
     if (a.done === b.done) {
@@ -90,6 +98,18 @@ const handleOrderDecrease = (event: React.MouseEvent<HTMLButtonElement>, task_id
     }
     return a.done ? 1 : -1; // si =1 la tâche a sera après la b
   });
+
+  // const sortedTasks = [...tasks].sort((a, b) => {
+  //   // Triez d'abord par ordre (plus petit en haut)
+  //   const orderByComparison = a.order - b.order;
+  
+  //   if (orderByComparison === 0) {
+  //     // Si les ordres sont identiques, triez par done (true en bas)
+  //     return a.done ? 1 : -1;
+  //   }
+  
+  //   return orderByComparison;
+  // });
   
   return (
     <div className="App container">
